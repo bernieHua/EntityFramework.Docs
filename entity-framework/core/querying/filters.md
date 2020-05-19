@@ -19,7 +19,7 @@ Global query filters are LINQ query predicates (a boolean expression typically p
 The following example shows how to use Global Query Filters to implement soft-delete and multi-tenancy query behaviors in a simple blogging model.
 
 > [!TIP]
-> You can view this article's [sample](https://github.com/dotnet/EntityFramework.Docs/tree/master/samples/core/QueryFilters) on GitHub.
+> You can view [multi-tenancy sample](https://github.com/dotnet/EntityFramework.Docs/tree/master/samples/core/QueryFilters) and [sample using navigations](https://github.com/dotnet/EntityFramework.Docs/tree/master/samples/core/QueryFiltersNavigations) on GitHub. 
 
 First, define the entities:
 
@@ -38,6 +38,16 @@ The predicate expressions passed to the _HasQueryFilter_ calls will now automati
 
 > [!NOTE]
 > It is currently not possible to define multiple query filters on the same entity - only the last one will be applied. However, you can define a single filter with multiple conditions using the logical _AND_ operator ([`&&` in C#](https://docs.microsoft.com/dotnet/csharp/language-reference/operators/boolean-logical-operators#conditional-logical-and-operator-)).
+
+## Use of navigations
+
+Navigations can be used when defining global query filters. They are applied recursively - when navigations used in query filters are translated, query filters defined on referenced entities are also applied, potentially adding more navigations.
+
+> [!NOTE]
+> Currently EF Core does not detect cycles in global query filter definitions, so you should be careful when defining them. If specified incorrectly, this could lead to infinite loops during query translation.
+
+> [!TIP]
+> It is advised to use optional navigations to reference entities that use global query filters. Required navigation expects related entity to exist. If required related entity is filtered out by the query filter, the parent entity could end up in unexpected state. This may lead to incorrect query results e.g. parent entity could also be removed from the result set. 
 
 ## Disabling Filters
 
